@@ -24,7 +24,8 @@ procs -----------memory---------- ---swap-- -----io---- -system-- -------cpu----
 All we have to do is put our cursor on any digit of 2413 in the first
 row and run mjr-stats-numbers-in-column to get the following:
 
-sum: 18959 mean: 2106.55556 median: 2084 min: 1861 max: 2413 sd: 164.11183 psd: 174.06688 range: 552 n: 9 var: 26932.69136 pvar: 30299.27778 sumsq: 40180581
+  sum: 18959 mean: 2106.55556 median: 2084 min: 1861 max: 2413 sd: 164.11183 
+  psd: 174.06688 range: 552 n: 9 var: 26932.69136 pvar: 30299.27778 sumsq: 40180581
 
 So the average is 2106 with a standard deviation of 164.11183.
 
