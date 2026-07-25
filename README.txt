@@ -1,4 +1,5 @@
-# mjr-stats-numbers-in-column
+mjr-stats-numbers-in-column
+===========================
 
 This Emacs package provides a single function: `mjr-stats-numbers-in-column'
 
