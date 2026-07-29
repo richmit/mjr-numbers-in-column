@@ -1,17 +1,15 @@
 # mjr-stats-numbers-in-column
 
-<!-- SHELLO: sed -n "/;;; Commentary:/,/;;; Code:/p" mjr-stats-numbers-in-column.el | head -n -2 | tail -n '+3' | sed 's/^;*;//; s/`/'\''/g;'
+<!-- SHELLO: sed -n "/;;; Commentary:/,/;;; Code:/p" mjr-stats-numbers-in-column.el | head -n -2 | tail -n '+3' | sed 's/^;*;//'
 -->
 
  See the README: https://github.com/richmit/mjr-stats-numbers-in-column/
 
  This Emacs package provides a single function: 'mjr-stats-numbers-in-column'
 
- This function provides an easy way to extract data arranged in a column and
- compute various statistics.
+ This function provides an easy way to extract data arranged in a column and compute various statistics.
 
- For example, we might be looking at the following "vmstat" output and
- want to know the average value for the "in" column.
+ For example, we might be looking at the following "vmstat" output and want to know the average value for the "in" column.
  
        $ vmstat 1 10
 
@@ -27,16 +25,14 @@
         0  0  89032 21592664    0      0    0    0     0     0 2190 3283  1  3 96  0  0  0
         0  0  89032 21592284    0      0    0    0     0     0 2121 3174  1  4 95  0  0  0
  
- All we have to do is put our cursor on any digit of 2413 in the first
- row and run mjr-stats-numbers-in-column to get the following:
+ All we have to do is put our cursor on any digit of 2413 in the first row and run 'mjr-stats-numbers-in-column' to get the following:
  
        sum: 18959 mean: 2106.55556 median: 2084 min: 1861 max: 2413 sd: 164.11183 
        psd: 174.06688 range: 552 n: 9 var: 26932.69136 pvar: 30299.27778 sumsq: 40180581
  
  So the average is 2106 with a standard deviation of 164.11183.
  
- The easiest way to install mjr-stats-numbers-in-column is to pull it directly from
- github:
+ The easiest way to install mjr-stats-numbers-in-column is to pull it directly from github:
  
       (package-vc-install (list 'mjr-stats-numbers-in-column
                            :url "https://github.com/richmit/mjr-stats-numbers-in-column"
