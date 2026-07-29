@@ -1,11 +1,11 @@
 # mjr-stats-numbers-in-column
 
-<!-- SHELLO: sed -n "/;;; Commentary:/,/;;; Code:/p" mjr-stats-numbers-in-column.el | head -n -2 | tail -n '+3' | sed 's/^;*//'
+<!-- SHELLO: sed -n "/;;; Commentary:/,/;;; Code:/p" mjr-stats-numbers-in-column.el | head -n -2 | tail -n '+3' | sed 's/^;*;//; s/`/'\''/g;'
 -->
 
  See the README: https://github.com/richmit/mjr-stats-numbers-in-column/
 
- This Emacs package provides a single function: `mjr-stats-numbers-in-column'
+ This Emacs package provides a single function: 'mjr-stats-numbers-in-column'
 
  This function provides an easy way to extract data arranged in a column and
  compute various statistics.
@@ -41,4 +41,3 @@
       (package-vc-install (list 'mjr-stats-numbers-in-column
                            :url "https://github.com/richmit/mjr-stats-numbers-in-column"
                            :rev 'newest))
-
