@@ -19,7 +19,7 @@
 ;; TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 ;; Author:      Mitch Richling
-;; Version:     1.1
+;; Version:     1.2
 ;; Keywords:    mjr-stats-numbers-in-column
 ;; URL:         https://github.com/richmit/mjr-stats-numbers-in-column
 
@@ -34,7 +34,7 @@
 ;; This function provides an easy way to extract data arranged in a column and compute various statistics.
 ;;
 ;; For example, we might be looking at the following "vmstat" output and want to know the average value for the "in" column.
-;; 
+;;
 ;;       $ vmstat 1 10
 ;;
 ;;       procs -----------memory---------- ---swap-- -----io---- -system-- -------cpu-------
@@ -48,16 +48,16 @@
 ;;        0  0  89032 21592184    0      0    0    0     0     0 1996 3034  1  3 96  0  0  0
 ;;        0  0  89032 21592664    0      0    0    0     0     0 2190 3283  1  3 96  0  0  0
 ;;        0  0  89032 21592284    0      0    0    0     0     0 2121 3174  1  4 95  0  0  0
-;;                                                                
+;;
 ;; All we have to do is put our cursor on any digit of 2413 in the first row and run `mjr-stats-numbers-in-column' to get the following:
-;; 
-;;       sum: 18959 mean: 2106.55556 median: 2084 min: 1861 max: 2413 sd: 164.11183 
+;;
+;;       sum: 18959 mean: 2106.55556 median: 2084 min: 1861 max: 2413 sd: 164.11183
 ;;       psd: 174.06688 range: 552 n: 9 var: 26932.69136 pvar: 30299.27778 sumsq: 40180581
-;; 
+;;
 ;; So the average is 2106 with a standard deviation of 164.11183.
-;; 
+;;
 ;; The easiest way to install mjr-stats-numbers-in-column is to pull it directly from github:
-;; 
+;;
 ;;      (package-vc-install (list 'mjr-stats-numbers-in-column
 ;;                           :url "https://github.com/richmit/mjr-stats-numbers-in-column"
 ;;                           :rev 'newest))
@@ -78,7 +78,7 @@
 (defcustom mjr-stats-numbers-in-column-num-digits-max 5
   "Maximum number of digits after the decimal point `mjr-stats-numbers-in-column' will print in results."
   :type '(choice (const  1) (const  2) (const  3) (const  4)
-                 (const  5) (const  6) (const  7) (const  8) 
+                 (const  5) (const  6) (const  7) (const  8)
                  (const  9) (const 10) (const 11) (const 12)
                  (const 13) (const 14) (const 15) (const 16))
   :group 'mjr-stats-numbers-in-column)
@@ -87,7 +87,7 @@
 ;;;###autoload
 (defcustom mjr-stats-numbers-in-column-stats-print '(:sum :mean :median :min :max :sd :range :n :var)
   "The stats `mjr-stats-numbers-in-column' will include in the printed message when run interactively."
-  :type '(repeat (choice (const :sum)   (const :mean) (const :median) (const :min)  (const :max)   (const :sd)   (const :psd) 
+  :type '(repeat (choice (const :sum)   (const :mean) (const :median) (const :min)  (const :max)   (const :sd)   (const :psd)
                          (const :range) (const :n)    (const :var)    (const :pvar) (const :sumsq)))
   :group 'mjr-stats-numbers-in-column)
 
@@ -95,7 +95,7 @@
 ;;;###autoload
 (defcustom mjr-stats-numbers-in-column-stats-return '(:sum :mean :median :min :max :sd :psd :range :n :var :pvar :sumsq :data)
   "The stats `mjr-stats-numbers-in-column' will return."
-  :type '(repeat (choice (const :sum)   (const :mean) (const :median) (const :min)  (const :max)   (const :sd)  (const :psd) 
+  :type '(repeat (choice (const :sum)   (const :mean) (const :median) (const :min)  (const :max)   (const :sd)  (const :psd)
                          (const :range) (const :n)    (const :var)    (const :pvar) (const :sumsq) (const :data)))
   :group 'mjr-stats-numbers-in-column)
 
@@ -183,8 +183,8 @@ printed and placed on the kill ring -- see `mjr-stats-numbers-in-column-num-digi
 ;; 123
 ;;  234
 ;;   567
-;;   
-;;  sum: 924 mean: 308 median: 234 min: 123 max: 567 sd: 188.6637 psd: 231.0649 range: 444 n: 3 var: 35594 pvar: 53391 sumsq: 391374     
+;;
+;;  sum: 924 mean: 308 median: 234 min: 123 max: 567 sd: 188.6637 psd: 231.0649 range: 444 n: 3 var: 35594 pvar: 53391 sumsq: 391374
 ;;  sum: 924 mean: 308 median: 234 min: 123 max: 567 sd: 188.6637 range: 444 n: 3 var: 35594
 
 ;; (mjr-install-mjr-packages :reinstall :git 'mjr-preview)
