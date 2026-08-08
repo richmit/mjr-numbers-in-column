@@ -19,7 +19,7 @@
 ;; TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 ;; Author:      Mitch Richling
-;; Version:     1.4
+;; Version:     1.5
 ;; Keywords:    mjr-stats-numbers-in-column
 ;; URL:         https://github.com/richmit/mjr-stats-numbers-in-column
 
@@ -121,7 +121,7 @@ printed and placed on the kill ring -- see `mjr-stats-numbers-in-column-num-digi
                                 (error "mjr-stats-numbers-in-column: ERROR: Point not on number!")
                                 (let ((target-column          (current-column))
                                       (list-of-number-strings (list seed-string-number)))
-                                  (while (when (zerop (forward-line 1))                                               
+                                  (while (when (and (zerop (forward-line 1)) (= (point) (pos-bol)))
                                            (when (= target-column (move-to-column target-column 't))
                                              (when-let ((nap (and (thing-at-point-looking-at num-regexp 40) (match-string 0))))
                                                (setq list-of-number-strings (cons nap list-of-number-strings))))))
@@ -180,7 +180,3 @@ printed and placed on the kill ring -- see `mjr-stats-numbers-in-column-num-digi
 ;; (mjr-install-mjr-packages :reinstall :git 'mjr-preview)
 
 ;;; mjr-stats-numbers-in-column.el ends here
-
-;; 123
-;;  234
-;;   567
