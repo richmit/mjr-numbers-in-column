@@ -19,7 +19,7 @@
 ;; TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 ;; Author:      Mitch Richling
-;; Version:     1.3
+;; Version:     1.4
 ;; Keywords:    mjr-stats-numbers-in-column
 ;; URL:         https://github.com/richmit/mjr-stats-numbers-in-column
 
@@ -116,24 +116,16 @@ printed and placed on the kill ring -- see `mjr-stats-numbers-in-column-num-digi
   (let* ((num-regexp  "[-+]?\\([0-9]+\\.?[0-9]*\\|\\.[0-9]+\\)\\([eE][-+]?[0-9]+\\)?")
          (datas       (if (not (= start end))
                           (mapcar (lambda (s) (substring-no-properties s)) (extract-rectangle start end))
-                          (let ((seed-string-number  (and (goto-char start) (thing-at-point-looking-at num-regexp 40) (match-string 0))))
+                          (let ((seed-string-number (and (goto-char start) (thing-at-point-looking-at num-regexp 40) (match-string 0))))
                             (if (not seed-string-number)
-                                (error "mjr-stats-numbers-in-column: ERROR: Point not on number")
-                                (let ((target-column   (current-column))
+                                (error "mjr-stats-numbers-in-column: ERROR: Point not on number!")
+                                (let ((target-column          (current-column))
                                       (list-of-number-strings (list seed-string-number)))
-                                  (while (let ((last-line  (line-number-at-pos))
-                                               (last-point (point)))
-                                           (or (when (zerop (forward-line 1))
-                                                 (when (or 't (not (= last-point (point))))
-                                                   (let ((line-start (point)))
-                                                     (move-to-column target-column 't)
-                                                     (when (and (or (zerop target-column) (not (= line-start (point))))
-                                                                (= target-column (- (point) line-start)))
-                                                       (let ((nap (and (thing-at-point-looking-at num-regexp 40) (match-string 0))))
-                                                         (when nap
-                                                           (setq list-of-number-strings (cons nap list-of-number-strings))))))))
-                                               (null (goto-char last-point)))))
-                                  (reverse list-of-number-strings))))))
+                                  (while (when (zerop (forward-line 1))                                               
+                                           (when (= target-column (move-to-column target-column 't))
+                                             (when-let ((nap (and (thing-at-point-looking-at num-regexp 40) (match-string 0))))
+                                               (setq list-of-number-strings (cons nap list-of-number-strings))))))
+                                    (reverse list-of-number-strings))))))
          (data        (mapcar (lambda (s) (float (string-to-number s))) datas))
          (sig-digits  (apply #'max (mapcar (lambda (x) (length (replace-regexp-in-string "0+e.*$" "" (format "%.50e" x)))) data)))
          (sorted-data (sort (cl-copy-list data) #'<))
@@ -181,10 +173,14 @@ printed and placed on the kill ring -- see `mjr-stats-numbers-in-column-num-digi
 ;; 123
 ;;  234
 ;;   567
-;;
+;;   
 ;;  sum: 924 mean: 308 median: 234 min: 123 max: 567 sd: 188.6637 psd: 231.0649 range: 444 n: 3 var: 35594 pvar: 53391 sumsq: 391374
 ;;  sum: 924 mean: 308 median: 234 min: 123 max: 567 sd: 188.6637 range: 444 n: 3 var: 35594
 
 ;; (mjr-install-mjr-packages :reinstall :git 'mjr-preview)
 
 ;;; mjr-stats-numbers-in-column.el ends here
+
+;; 123
+;;  234
+;;   567
