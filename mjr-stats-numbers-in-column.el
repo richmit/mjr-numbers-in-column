@@ -19,7 +19,7 @@
 ;; TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 ;; Author:      Mitch Richling
-;; Version:     1.2
+;; Version:     1.3
 ;; Keywords:    mjr-stats-numbers-in-column
 ;; URL:         https://github.com/richmit/mjr-stats-numbers-in-column
 
@@ -77,10 +77,8 @@
 ;;;###autoload
 (defcustom mjr-stats-numbers-in-column-num-digits-max 5
   "Maximum number of digits after the decimal point `mjr-stats-numbers-in-column' will print in results."
-  :type '(choice (const  1) (const  2) (const  3) (const  4)
-                 (const  5) (const  6) (const  7) (const  8)
-                 (const  9) (const 10) (const 11) (const 12)
-                 (const 13) (const 14) (const 15) (const 16))
+  :type '(choice (const  1) (const  2) (const  3) (const  4) (const  5) (const  6) (const  7) (const  8)
+                 (const  9) (const 10) (const 11) (const 12) (const 13) (const 14) (const 15) (const 16))
   :group 'mjr-stats-numbers-in-column)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
