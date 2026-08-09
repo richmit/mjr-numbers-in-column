@@ -1,4 +1,4 @@
-;;; mjr-stats-numbers-in-column.el --- statstics -*- lexical-binding:t; coding: utf-8; mode:emacs-lisp; fill-column:158 -*-
+;;; mjr-numbers-in-column.el --- statstics -*- lexical-binding:t; coding: utf-8; mode:emacs-lisp; fill-column:158 -*-
 
 ;; Copyright (c) 2026-2026 Mitch Richling <https://www.mitchr.me>.  All rights reserved.
 ;;
@@ -20,18 +20,20 @@
 
 ;; Author:      Mitch Richling
 ;; Version:     1.5
-;; Keywords:    mjr-stats-numbers-in-column
-;; URL:         https://github.com/richmit/mjr-stats-numbers-in-column
+;; Keywords:    mjr-numbers-in-column
+;; URL:         https://github.com/richmit/mjr-numbers-in-column
 
 ;; This file is not part of Emacs
 
 ;;; Commentary:
 ;;
-;; See the README: https://github.com/richmit/mjr-stats-numbers-in-column/
+;; See the README: https://github.com/richmit/mjr-numbers-in-column/
 ;;
-;; This Emacs package provides a single function: `mjr-stats-numbers-in-column'
+;; This package provides an easy way to extract data arranged in a column and compute various statistics.
 ;;
-;; This function provides an easy way to extract data arranged in a column and compute various statistics.
+;; Two functions are provided:
+;;  - `mjr-numbers-in-column-extract' to extract data from a column.
+;;  - `mjr-numbers-in-column-stats' to compute statstics for data in a column
 ;;
 ;; For example, we might be looking at the following "vmstat" output and want to know the average value for the "in" column.
 ;;
@@ -49,7 +51,7 @@
 ;;        0  0  89032 21592664    0      0    0    0     0     0 2190 3283  1  3 96  0  0  0
 ;;        0  0  89032 21592284    0      0    0    0     0     0 2121 3174  1  4 95  0  0  0
 ;;
-;; All we have to do is put our cursor on any digit of 2413 in the first row and run `mjr-stats-numbers-in-column' to get the following:
+;; All we have to do is put our cursor on any digit of 2413 in the first row and run `mjr-numbers-in-column-stats' to get the following:
 ;;
 ;;       sum: 18959 mean: 2106.55556 median: 2084 min: 1861 max: 2413 sd: 164.11183
 ;;       psd: 174.06688 range: 552 n: 9 var: 26932.69136 pvar: 30299.27778 sumsq: 40180581
@@ -75,65 +77,63 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;###autoload
-(defcustom mjr-stats-numbers-in-column-num-digits-max 5
-  "Maximum number of digits after the decimal point `mjr-stats-numbers-in-column' will print in results."
+(defcustom mjr-numbers-in-column-stats-num-digits-max 5
+  "Maximum number of digits after the decimal point `mjr-numbers-in-column-stats' will print in results."
   :type '(choice (const  1) (const  2) (const  3) (const  4) (const  5) (const  6) (const  7) (const  8)
                  (const  9) (const 10) (const 11) (const 12) (const 13) (const 14) (const 15) (const 16))
-  :group 'mjr-stats-numbers-in-column)
+  :group 'mjr-numbers-in-column-stats)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;###autoload
-(defcustom mjr-stats-numbers-in-column-stats-print '(:sum :mean :median :min :max :sd :range :n :var)
-  "The stats `mjr-stats-numbers-in-column' will include in the printed message when run interactively."
+(defcustom mjr-numbers-in-column-stats-stats-print '(:sum :mean :median :min :max :sd :range :n :var)
+  "The stats `mjr-numbers-in-column-stats' will include in the printed message when run interactively."
   :type '(repeat (choice (const :sum)   (const :mean) (const :median) (const :min)  (const :max)   (const :sd)   (const :psd)
                          (const :range) (const :n)    (const :var)    (const :pvar) (const :sumsq)))
-  :group 'mjr-stats-numbers-in-column)
+  :group 'mjr-numbers-in-column-stats)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;###autoload
-(defcustom mjr-stats-numbers-in-column-stats-return '(:sum :mean :median :min :max :sd :psd :range :n :var :pvar :sumsq :data)
-  "The stats `mjr-stats-numbers-in-column' will return."
+(defcustom mjr-numbers-in-column-stats-stats-return '(:sum :mean :median :min :max :sd :psd :range :n :var :pvar :sumsq :data)
+  "The stats `mjr-numbers-in-column-stats' will return."
   :type '(repeat (choice (const :sum)   (const :mean) (const :median) (const :min)  (const :max)   (const :sd)  (const :psd)
                          (const :range) (const :n)    (const :var)    (const :pvar) (const :sumsq) (const :data)))
-  :group 'mjr-stats-numbers-in-column)
+  :group 'mjr-numbers-in-column-stats)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;###autoload
-(defun mjr-stats-numbers-in-column (start end)
-  "Compute statistics for numbers in a column.  Results are  put on the kill ring.
+(defun mjr-numbers-in-column-extract (start end)
+  "Extract numbers arranged in a column return them as a list and, when called interactively, place a string on the kill ring.
 
 When run interactively the column of numbers is identified in one of two ways:
   * Rectangular .. With an active, rectangular region -- one number per line of the rectangle
   * Point ........ Number found under the point, and continues to subsequent lines below the current one until a line is reached with no number.
 When called non-interactively the rectangle method is used when start != end, otherwise the point method is used.
-The point will be moved to the end of the last number found as a visual queue to the user when the point method is used.
-
-This function returns an alist of statistics specified in the variable `mjr-stats-numbers-in-column-stats-return'.  When called interactively a summary is
-printed and placed on the kill ring -- see `mjr-stats-numbers-in-column-num-digits-max' and `mjr-stats-numbers-in-column-stats-print'."
+The point will be moved to the end of the last number found as a visual queue to the user when the point method is used."
   (interactive (if (and transient-mark-mode (region-active-p) (not (= (region-beginning) (region-end))))
                    (list (region-beginning) (region-end))
                    (list (point) (point))))
-  (let* ((num-regexp  "[-+]?\\([0-9]+\\.?[0-9]*\\|\\.[0-9]+\\)\\([eE][-+]?[0-9]+\\)?")
-         (datas       (if (not (= start end))
-                          (mapcar (lambda (s) (substring-no-properties s)) (extract-rectangle start end))
-                          (let ((seed-string-number (and (goto-char start) (thing-at-point-looking-at num-regexp 40) (match-string 0))))
-                            (if (not seed-string-number)
-                                (error "mjr-stats-numbers-in-column: ERROR: Point not on number!")
-                                (let ((target-column          (current-column))
-                                      (list-of-number-strings (list seed-string-number)))
-                                  (while (when (and (zerop (forward-line 1)) (= (point) (pos-bol)))
-                                           (when (= target-column (move-to-column target-column 't))
-                                             (when-let ((nap (and (thing-at-point-looking-at num-regexp 40) (match-string 0))))
-                                               (setq list-of-number-strings (cons nap list-of-number-strings))))))
-                                    (reverse list-of-number-strings))))))
-         (data        (mapcar (lambda (s) (float (string-to-number s))) datas))
-         (sig-digits  (apply #'max (mapcar (lambda (x) (length (replace-regexp-in-string "0+e.*$" "" (format "%.50e" x)))) data)))
-         (sorted-data (sort (cl-copy-list data) #'<))
-         (prt-digits  (min sig-digits
-                           (if (and (integerp mjr-stats-numbers-in-column-num-digits-max) (< 0 mjr-stats-numbers-in-column-num-digits-max))
-                               mjr-stats-numbers-in-column-num-digits-max
-                               5)))
-         (zero-eps    (expt 10 (- (+ 2 prt-digits))))
+  (let* ((num-rex "[-+]?\\([0-9]+\\.?[0-9]*\\|\\.[0-9]+\\)\\([eE][-+]?[0-9]+\\)?")
+         (num-str (if (not (= start end))
+                      (mapcar (lambda (s) (substring-no-properties s)) (extract-rectangle start end))
+                      (let ((seed-string-number (and (goto-char start) (thing-at-point-looking-at num-rex 40) (match-string 0))))
+                        (if (not seed-string-number)
+                            (error "mjr-numbers-in-column-stats: ERROR: Point not on number!")
+                            (let ((target-column          (current-column))
+                                  (list-of-number-strings (list seed-string-number)))
+                              (while (when (and (zerop (forward-line 1)) (= (point) (pos-bol)))
+                                       (when (= target-column (move-to-column target-column 't))
+                                         (when-let ((nap (and (thing-at-point-looking-at num-rex 40) (match-string 0))))
+                                           (setq list-of-number-strings (cons nap list-of-number-strings))))))
+                              (reverse list-of-number-strings))))))
+         (num-flt (mapcar (lambda (s) (float (string-to-number s))) num-str)))
+    (if (called-interactively-p 'any)
+        (kill-new (message (format "%S" num-flt))))
+    num-flt))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(defun mjr-compute-stats (data)
+  "Compute statistics for a list of floating point numbers, and return the statistics in an alist."
+  (let* ((sorted-data (sort (cl-copy-list data) #'<))
          (the-n       (length sorted-data))
          (the-min     (cl-first sorted-data))
          (the-sum     (apply '+ sorted-data))
@@ -145,10 +145,30 @@ printed and placed on the kill ring -- see `mjr-stats-numbers-in-column-num-digi
          (the-sd      (if (and the-var (< 0 the-var)) (sqrt the-var)))
          (the-psd     (if (and the-pvar (< 0 the-pvar)) (sqrt the-pvar)))
          (the-max     (car (last sorted-data)))
-         (the-range   (- the-max the-min))
-         (stat-alist  (list (cons :sum the-sum) (cons :mean the-mean) (cons :median the-median) (cons :min   the-min)
-                            (cons :max the-max) (cons :sd   the-sd)   (cons :psd    the-psd)    (cons :range the-range)
-                            (cons :n   the-n)   (cons :var  the-var)  (cons :pvar   the-pvar)   (cons :sumsq the-sumsq)))
+         (the-range   (- the-max the-min)))
+    (list (cons :sum the-sum) (cons :mean the-mean) (cons :median the-median) (cons :min   the-min)
+          (cons :max the-max) (cons :sd   the-sd)   (cons :psd    the-psd)    (cons :range the-range)
+          (cons :n   the-n)   (cons :var  the-var)  (cons :pvar   the-pvar)   (cons :sumsq the-sumsq))))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;###autoload
+(defun mjr-numbers-in-column-stats (start end)
+  "Compute statistics for numbers in a column.  Results are  put on the kill ring.
+
+Uses `mjr-numbers-in-column-extract' to get the data.  This function returns an alist of statistics specified in the variable
+`mjr-numbers-in-column-stats-stats-return'.  When called interactively a summary is printed and placed on the kill ring -- see
+`mjr-numbers-in-column-stats-num-digits-max' and `mjr-numbers-in-column-stats-stats-print'."
+  (interactive (if (and transient-mark-mode (region-active-p) (not (= (region-beginning) (region-end))))
+                   (list (region-beginning) (region-end))
+                   (list (point) (point))))
+  (let* ((data        (mjr-numbers-in-column-extract start end))
+         (stat-alist  (mjr-compute-stats data))
+         (sig-digits  (apply #'max (mapcar (lambda (x) (length (replace-regexp-in-string "0+e.*$" "" (format "%.50e" x)))) data)))         
+         (prt-digits  (min sig-digits
+                           (if (and (integerp mjr-numbers-in-column-stats-num-digits-max) (< 0 mjr-numbers-in-column-stats-num-digits-max))
+                               mjr-numbers-in-column-stats-num-digits-max
+                               5)))
+         (zero-eps    (expt 10 (- (+ 2 prt-digits))))
          (stat-string (mapconcat (lambda (k) (when-let* ((s  (string-remove-prefix ":" (symbol-name k)))
                                                          (v  (cdr (assoc k stat-alist)))
                                                          (iv (if (< (abs (- v (truncate v))) zero-eps)
@@ -159,24 +179,25 @@ printed and placed on the kill ring -- see `mjr-stats-numbers-in-column-num-digi
                                                          (fp (format fs        s v)))
                                                   (if (< (length np) (length fp))
                                                       np
-                                                      fp))) mjr-stats-numbers-in-column-stats-print)))
+                                                      fp))) mjr-numbers-in-column-stats-stats-print)))
     (kill-new stat-string)
     (deactivate-mark)
     (when (called-interactively-p 'any)
       (message stat-string))
-    (mapcar (lambda (k) (assoc k stat-alist)) mjr-stats-numbers-in-column-stats-return)))
+    (mapcar (lambda (k) (assoc k stat-alist)) mjr-numbers-in-column-stats-stats-return)))
 
-(provide 'mjr-stats-numbers-in-column)
+(provide 'mjr-numbers-in-column-stats)
+
 
 ;; Some Test Dat
 ;;
 ;; 123
 ;;  234
-;;   567
-;;   
+;;   567  
+;;    
 ;;  sum: 924 mean: 308 median: 234 min: 123 max: 567 sd: 188.6637 psd: 231.0649 range: 444 n: 3 var: 35594 pvar: 53391 sumsq: 391374
 ;;  sum: 924 mean: 308 median: 234 min: 123 max: 567 sd: 188.6637 range: 444 n: 3 var: 35594
 
-;; (mjr-install-mjr-packages :reinstall :git 'mjr-preview)
+;; (mjr-install-mjr-packages :reinstall :git 'mjr-numbers-in-column)
 
-;;; mjr-stats-numbers-in-column.el ends here
+;;; mjr-numbers-in-column.el ends here
