@@ -19,7 +19,7 @@
 ;; TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 ;; Author:      Mitch Richling
-;; Version:     2.1
+;; Version:     2.2
 ;; Keywords:    mjr-numbers-in-column
 ;; URL:         https://github.com/richmit/mjr-numbers-in-column
 
@@ -131,7 +131,7 @@ The point will be moved to the end of the last number found as a visual queue to
     num-flt))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-(defun mjr-compute-stats (data)
+(defun mjr-stats-summary (data)
   "Compute statistics for a list of floating point numbers, and return the statistics in an alist."
   (let* ((sorted-data (sort (cl-copy-list data) #'<))
          (the-n       (length sorted-data))
@@ -162,7 +162,7 @@ Uses `mjr-numbers-in-column-extract' to get the data.  This function returns an 
                    (list (region-beginning) (region-end))
                    (list (point) (point))))
   (let* ((data        (mjr-numbers-in-column-extract start end))
-         (stat-alist  (mjr-compute-stats data))
+         (stat-alist  (mjr-stats-summary data))
          (sig-digits  (apply #'max (mapcar (lambda (x) (length (replace-regexp-in-string "0+e.*$" "" (format "%.50e" x)))) data)))         
          (prt-digits  (min sig-digits
                            (if (and (integerp mjr-numbers-in-column-stats-num-digits-max) (< 0 mjr-numbers-in-column-stats-num-digits-max))
