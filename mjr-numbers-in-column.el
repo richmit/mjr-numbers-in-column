@@ -19,7 +19,7 @@
 ;; TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 ;; Author:      Mitch Richling
-;; Version:     2.0
+;; Version:     2.1
 ;; Keywords:    mjr-numbers-in-column
 ;; URL:         https://github.com/richmit/mjr-numbers-in-column
 
