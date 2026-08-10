@@ -19,7 +19,7 @@
 ;; TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 ;; Author:      Mitch Richling
-;; Version:     2.2
+;; Version:     2.3
 ;; Keywords:    mjr-numbers-in-column
 ;; URL:         https://github.com/richmit/mjr-numbers-in-column
 
@@ -101,17 +101,21 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;###autoload
-(defun mjr-numbers-in-column-extract (start end)
-  "Extract numbers arranged in a column return them as a list and, when called interactively, place a string on the kill ring.
+(defun mjr-numbers-in-column-extract (start end &optional kill-separator)
+  "Extract numbers arranged in a column return them as a list and, when KILL-SYNTAX is non-NIL, place a string on the kill ring.
 
 When run interactively the column of numbers is identified in one of two ways:
   * Rectangular .. With an active, rectangular region -- one number per line of the rectangle
   * Point ........ Number found under the point, and continues to subsequent lines below the current one until a line is reached with no number.
+When called interactively, the KILL-SEPARATOR will be a single space unless called with a prefix argument in which case a value will be prompted.
 When called non-interactively the rectangle method is used when start != end, otherwise the point method is used.
 The point will be moved to the end of the last number found as a visual queue to the user when the point method is used."
-  (interactive (if (and transient-mark-mode (region-active-p) (not (= (region-beginning) (region-end))))
-                   (list (region-beginning) (region-end))
-                   (list (point) (point))))
+  (interactive (append (if (and transient-mark-mode (region-active-p) (not (= (region-beginning) (region-end))))
+                           (list (region-beginning) (region-end))
+                           (list (point) (point)))
+                       (list (if current-prefix-arg
+                                 (read-string "Separator for kill: " ",")
+                                 " "))))
   (let* ((num-rex "[-+]?\\([0-9]+\\.?[0-9]*\\|\\.[0-9]+\\)\\([eE][-+]?[0-9]+\\)?")
          (num-str (if (not (= start end))
                       (mapcar (lambda (s) (substring-no-properties s)) (extract-rectangle start end))
@@ -126,8 +130,8 @@ The point will be moved to the end of the last number found as a visual queue to
                                            (setq list-of-number-strings (cons nap list-of-number-strings))))))
                               (reverse list-of-number-strings))))))
          (num-flt (mapcar (lambda (s) (float (string-to-number s))) num-str)))
-    (if (called-interactively-p 'any)
-        (kill-new (message (format "%S" num-flt))))
+    (when (stringp kill-separator)
+      (kill-new (string-join (mapcar #'number-to-string num-flt) kill-separator)))
     num-flt))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
