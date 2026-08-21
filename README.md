@@ -1,7 +1,9 @@
 <!-- :shell>>> ~/core/codeBits/bin/emacs_package_com_to_md.rb mjr-numbers-in-column.el -->
-# `mjr-stats-numbers-in-column`: Emacs Tools For Columnar Data
+# Emacs Tools For Columnar Data
 
 See the README: https://github.com/richmit/mjr-numbers-in-column/
+
+## Introduction
 
 This package provides an easy way to extract data arranged in a column and compute various statistics.
 
@@ -32,7 +34,7 @@ All we have to do is put our cursor on any digit of 2413 in the first row and ru
 
 So the average is 2106 with a standard deviation of 164.11183.
 
-# Installing
+## Installing
 
 The easiest way to install mjr-stats-numbers-in-column is to pull it directly from github:
 
