@@ -27,6 +27,8 @@
 
 ;;; Commentary:
 ;;
+;; * `mjr-stats-numbers-in-column': Emacs Tools For Columnar Data
+;;
 ;; See the README: https://github.com/richmit/mjr-numbers-in-column/
 ;;
 ;; This package provides an easy way to extract data arranged in a column and compute various statistics.
@@ -57,6 +59,8 @@
 ;;       psd: 174.06688 range: 552 n: 9 var: 26932.69136 pvar: 30299.27778 sumsq: 40180581
 ;;
 ;; So the average is 2106 with a standard deviation of 164.11183.
+;;
+;; * Installing
 ;;
 ;; The easiest way to install mjr-stats-numbers-in-column is to pull it directly from github:
 ;;
